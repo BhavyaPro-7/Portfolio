@@ -1,0 +1,110 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile populated from Google Authentication",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Full name of the user",
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user",
+          "maxLength": 150
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "Profile picture URL",
+          "maxLength": 500
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of user creation"
+        },
+        "lastLoginAt": {
+          "type": "string",
+          "description": "ISO timestamp of last login"
+        }
+      },
+      "required": ["uid", "email"]
+    },
+    "ContactMessage": {
+      "title": "Contact Message",
+      "description": "Message submitted via contact form",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "senderName": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "senderEmail": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "subject": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "message": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        }
+      },
+      "required": ["senderName", "senderEmail", "subject", "message", "createdAt"]
+    },
+    "PortfolioData": {
+      "title": "Portfolio Content Data",
+      "description": "Stores editable profile, skills, projects, and journey data for the portfolio",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "title": { "type": "string" },
+        "bio1": { "type": "string" },
+        "bio2": { "type": "string" },
+        "email": { "type": "string" },
+        "linkedin": { "type": "string" },
+        "github": { "type": "string" },
+        "instagram": { "type": "string" },
+        "location": { "type": "string" },
+        "yearTag": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/User"
+      },
+      "description": "Stores user records after Google Authentication"
+    },
+    "/messages/{messageId}": {
+      "schema": {
+        "$ref": "#/entities/ContactMessage"
+      },
+      "description": "Stores messages submitted via the contact modal"
+    },
+    "/content/{contentId}": {
+      "schema": {
+        "$ref": "#/entities/PortfolioData"
+      },
+      "description": "Stores portfolio custom dynamic content editable by admin"
+    }
+  }
+}

@@ -1,0 +1,56 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == "bhavyapradeep72@gmail.com" ||
+        request.auth.token.email == "bhavyakothari.dev@gmail.com"
+      );
+    }
+
+    // Users collection rules
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isOwner(userId)
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.email == request.auth.token.email;
+      allow update: if isOwner(userId)
+                    && request.resource.data.uid == request.auth.uid;
+    }
+
+    // Messages collection rules
+    match /messages/{messageId} {
+      allow create: if request.resource.data.senderName is string
+                    && request.resource.data.senderName.size() <= 100
+                    && request.resource.data.senderEmail is string
+                    && request.resource.data.senderEmail.size() <= 150
+                    && request.resource.data.subject is string
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() <= 2000;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // Dynamic Portfolio Content rules
+    match /content/{contentId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
